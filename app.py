@@ -22,14 +22,17 @@ df = df.dropna(subset=['Order_Date', 'Ship_Date'])
 
 # Now df is ready for your dashboard!
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY],suppress_callback_exceptions=True)
-
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 # Hamburger button (three dashes)
 hamburger = html.Button(
-    html.Span(className="navbar-toggler-icon"),
+    html.Span([
+        html.Span(style={"display": "block", "width": "30px", "height": "4px", "background": "#333", "margin": "6px 0"}),
+        html.Span(style={"display": "block", "width": "30px", "height": "4px", "background": "#333", "margin": "6px 0"}),
+        html.Span(style={"display": "block", "width": "30px", "height": "4px", "background": "#333", "margin": "6px 0"}),
+    ]),
     className="navbar-toggler",
     id="open-offcanvas",
-    style={"position": "fixed", "top": "1rem", "left": "1rem", "zIndex": 1050}
+    style={"position": "fixed", "top": "1rem", "left": "1rem", "zIndex": 1050, "background": "none", "border": "none"}
 )
 
 # Offcanvas sidebar
@@ -97,12 +100,31 @@ def toggle_offcanvas(open_click, *args):
 def render_page_content(pathname):
     if pathname == "/":
         return html.Div([
-            html.H1("E-Commerce Sales Dashboard"),
-            html.P("Project introduction and overview.")
+            html.H1(
+                "E-Commerce Sales Dashboard",
+                style={"textAlign": "center", "marginTop": "2rem"}
+            ),
+            html.Div(
+                html.P(
+                    "In today’s fast-paced digital marketplace, understanding customer behavior and sales trends is vital for business growth. "
+                    "Our interactive dashboard provides a comprehensive analysis of e-commerce data, revealing insights across product categories, "
+                    "regional sales, seasonal fluctuations, and the impact of discounts on revenue. With intuitive visualizations and real-time filtering, "
+                    "users can explore buying patterns, identify top-performing segments, and make data-driven decisions. "
+                    "Join us as we transform raw sales data into actionable intelligence, unlocking the power of analytics to drive smarter retail strategies.",
+                    style={
+                        "fontSize": "1.2rem",
+                        "lineHeight": "1.7",
+                        "maxWidth": "900px",
+                        "margin": "2rem auto",
+                        "textAlign": "center",
+                        "color": "#222"
+                    }
+                )
+            )
         ])
     elif pathname == "/sales-subcat":
         return html.Div([
-            html.H2("Sales by Sub-Category"),
+            html.H2("Sales by Sub-Category",style={"textAlign": "center"}),
             html.Label("Select Category:"),
             dcc.Dropdown(
                 id="filter-category",
@@ -115,7 +137,7 @@ def render_page_content(pathname):
         ])
     elif pathname == "/profit-time":
         return html.Div([
-            html.H2("Profit Over Time"),
+            html.H2("Profit Over Time",style={"textAlign": "center"}),
             html.Label("Select Year:"),
             dcc.Dropdown(
                 id="filter-year",
@@ -128,7 +150,7 @@ def render_page_content(pathname):
         ])
     elif pathname == "/profit-state":
         return html.Div([
-            html.H2("Profit by State"),
+            html.H2("Profit by State",style={"textAlign": "center"}),
             html.Label("Select Region:"),
             dcc.Dropdown(
                 id="filter-region",
@@ -141,7 +163,7 @@ def render_page_content(pathname):
         ])
     elif pathname == "/sales-map":
         return html.Div([
-            html.H2("Sales by State (Map)"),
+            html.H2("Sales by State (Map)",style={"textAlign": "center"}),
             html.Label("Select Year:"),
             dcc.Dropdown(
                 id="filter-map-year",
@@ -154,7 +176,7 @@ def render_page_content(pathname):
         ])
     elif pathname == "/sales-time":
         return html.Div([
-            html.H2("Sales Over Time"),
+            html.H2("Sales Over Time",style={"textAlign": "center"}),
             html.Label("Select Category:"),
             dcc.Dropdown(
                 id="filter-sales-category",
@@ -167,7 +189,7 @@ def render_page_content(pathname):
         ])
     elif pathname == "/discount-bubble":
         return html.Div([
-            html.H2("Discount vs Sales (Bubble Plot)"),
+            html.H2("Discount vs Sales (Bubble Plot)",style={"textAlign": "center"}),
             html.Label("Select Segment:"),
             dcc.Dropdown(
                 id="filter-segment",
@@ -180,7 +202,7 @@ def render_page_content(pathname):
         ])
     elif pathname == "/category-treemap":
         return html.Div([
-            html.H2("Category Treemap"),
+            html.H2("Category Treemap",style={"textAlign": "center"}),
             html.Label("Select Region:"),
             dcc.Dropdown(
                 id="filter-treemap-region",
