@@ -4,21 +4,23 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 
-# --- Load and preprocess your data ---
-df = pd.read_csv("data/Sample - Superstore.csv")
 
-# Clean column names (remove spaces, replace with underscores)
-df.columns = [col.strip().replace(" ", "_") for col in df.columns]
+# load and clean data
+def load_data():
+    df = pd.read_csv("data/Sample - Superstore.csv")
 
-# Remove rows with any null values
-df = df.dropna()
+    # Clean column names (remove spaces, replace with underscores)
+    df.columns = [col.strip().replace(" ", "_") for col in df.columns]
 
-# (Optional) Convert dates to datetime
-df['Order_Date'] = pd.to_datetime(df['Order_Date'], errors='coerce')
-df['Ship_Date'] = pd.to_datetime(df['Ship_Date'], errors='coerce')
+    # Convert dates to datetime
+    df['Order_Date'] = pd.to_datetime(df['Order_Date'], errors='coerce')
+    df['Ship_Date'] = pd.to_datetime(df['Ship_Date'], errors='coerce')
 
-# (Optional) Remove rows with invalid dates
-df = df.dropna(subset=['Order_Date', 'Ship_Date'])
+    # Remove rows with invalid dates
+    df = df.dropna(subset=['Order_Date', 'Ship_Date'])
+
+
+
 
 # Now df is ready for your dashboard!
 
