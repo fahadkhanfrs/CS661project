@@ -7,7 +7,7 @@ import dash_bootstrap_components as dbc
 dash.register_page(__name__, path="/top-sellers")
 
 # Load dataset
-df = pd.read_csv("data/final_olist_dataset.csv")
+df = pd.read_csv("data/E-commerse.csv")
 
 # Seller summary
 seller_summary = df.groupby(['seller_id', 'seller_state', 'product_category_name_english']).agg({

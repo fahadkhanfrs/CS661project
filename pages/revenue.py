@@ -136,7 +136,7 @@ import dash_bootstrap_components as dbc
 dash.register_page(__name__, path="/revenue-city")
 
 # Load data
-df = pd.read_csv("data/final_olist_dataset.csv", parse_dates=["order_purchase_timestamp"])
+df = pd.read_csv("data/E-commerse.csv", parse_dates=["order_purchase_timestamp"])
 
 # Preprocess
 df["year"] = df["order_purchase_timestamp"].dt.year

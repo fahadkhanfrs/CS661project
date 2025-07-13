@@ -259,7 +259,7 @@ import dash_bootstrap_components as dbc
 dash.register_page(__name__, path="/review-score")
 
 # Load and preprocess data
-df = pd.read_csv("data/final_olist_dataset.csv")
+df = pd.read_csv("data/E-commerse.csv")
 df["review_creation_date"] = pd.to_datetime(df["review_creation_date"], format='mixed', errors='coerce')
 df["review_score"] = df["review_score"].astype("int")
 
