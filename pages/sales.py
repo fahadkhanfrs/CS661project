@@ -253,7 +253,7 @@ layout = html.Div([
     dbc.Row([
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Treemap: City-wise Product Sales in Selected State"),
+                dbc.CardHeader("Treemap: City-wise Product Sales in {Selected State}"),
                 dbc.CardBody(dcc.Graph(id="city-sales-treemap"))
             ])
         )
@@ -308,7 +308,7 @@ def update_city_treemap(selected_state):
         city_grouped,
         path=["customer_city", "product_category_name_english"],
         values="total_products",
-        title=f"City-wise Product Category Sales in {selected_state}",
+        title=f"City-wise Product Sales in {selected_state}",
         template="plotly_white"
     )
     return fig

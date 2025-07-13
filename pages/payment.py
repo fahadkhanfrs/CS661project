@@ -334,83 +334,71 @@
 #     return fig, card_header
 # -----------------------------
 import dash
+from dash import dcc, html, Input, Output, callback
+import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
-import dash_bootstrap_components as dbc
-from dash import dcc, html, Input, Output, callback
 
 # Register the page
-dash.register_page(__name__, path="/payment-by-category")
+dash.register_page(__name__, path="/payment") 
 
-# Load dataset
+# Load data
 df = pd.read_csv("data/E-commerse.csv")
 
-# Assume quantity = 1 → total_payment = price
-df["total_payment"] = df["price"]
+# Fill missing values
+df["product_category_name_english"] = df["product_category_name_english"].fillna("Unknown")
+
+# Precompute grouped data
+category_payment = df.groupby(["product_category_name_english", "payment_type"]).size().reset_index(name="count")
+payment_type_counts = df["payment_type"].value_counts().reset_index()
+payment_type_counts.columns = ["payment_type", "count"]
 
 # Layout
 layout = html.Div([
-    html.H3("Payment by Product Category", className="mb-4 text-center text-primary"),
+    html.H4("Payment Type Distribution per Product Category", className="mb-4 text-primary"),
+    
+    dcc.Graph(id="stacked-payment-bar"),
 
-    # Row 1: Pie Chart and Stacked Bar Chart
-    dbc.Row([
-        dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("Payment Distribution by Product Category (Pie)"),
-                dbc.CardBody(dcc.Graph(id="category-payment-pie"))
-            ]),
-            width=6
-        ),
-        dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("Payment by Category and Payment Method (Stacked Bar)"),
-                dbc.CardBody(dcc.Graph(id="category-payment-stacked-bar"))
-            ]),
-            width=6
-        )
-    ])
+    html.Hr(),
+
+    html.H5("Overall Payment Type Usage", className="mb-3 text-success"),
+    dcc.Graph(id="payment-type-pie")
 ])
 
-
-# PIE CHART: Payment by Product Category
+# Callback
 @callback(
-    Output("category-payment-pie", "figure"),
-    Input("category-payment-pie", "id")  # Dummy input to trigger
+    Output("stacked-payment-bar", "figure"),
+    Output("payment-type-pie", "figure"),
+    Input("stacked-payment-bar", "id")  # dummy input to trigger once on load
 )
-def update_pie_chart(_):
-    pie_data = df.groupby("category")["total_payment"].sum().reset_index().sort_values("total_payment", ascending=False)
-    fig = px.pie(
-        pie_data,
-        values="total_payment",
-        names="category",
-        title="Total Payments by Product Category",
-        hole=0.4,
-        template="plotly_white"
+def update_charts(_):
+    # Stacked bar chart
+    bar_fig = px.bar(
+        category_payment,
+        x="product_category_name_english",
+        y="count",
+        color="payment_type",
+        title="Stacked Bar Chart: Payment Types by Product Category",
+        labels={"count": "Number of Orders", "product_category_name_english": "Product Category"},
+        barmode="stack"
     )
-    return fig
-
-
-# STACKED BAR CHART: Payment by Category and Payment Method
-@callback(
-    Output("category-payment-stacked-bar", "figure"),
-    Input("category-payment-stacked-bar", "id")  # Dummy input to trigger
-)
-def update_stacked_bar(_):
-    bar_data = df.groupby(["category", "payment_method"])["total_payment"].sum().reset_index()
-
-    # Limit to top 10 categories by total payment
-    top_categories = bar_data.groupby("category")["total_payment"].sum().nlargest(10).index.tolist()
-    filtered = bar_data[bar_data["category"].isin(top_categories)]
-
-    fig = px.bar(
-        filtered,
-        x="category",
-        y="total_payment",
-        color="payment_method",
-        barmode="stack",
-        title=None,
-        labels={"total_payment": "Total Payment (₹)", "category": "Product Category"},
-        template="plotly_white"
+    bar_fig.update_layout(
+        xaxis_tickangle=45,
+        template="plotly_white",
+        legend_title_text="Payment Type",
+        margin=dict(l=20, r=20, t=60, b=120)
     )
-    fig.update_layout(xaxis_tickangle=45)
-    return fig
+
+    # Pie chart
+    pie_fig = px.pie(
+        payment_type_counts,
+        values="count",
+        names="payment_type",
+        title="Overall Payment Type Usage (Percentage)",
+        hole=0.3
+    )
+    pie_fig.update_traces(textinfo='percent+label')
+    pie_fig.update_layout(template="plotly_white")
+
+    return bar_fig, pie_fig
+
