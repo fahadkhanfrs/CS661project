@@ -187,10 +187,22 @@ dash.register_page(__name__, path="/sales")
 # Load dataset
 df = pd.read_csv("data/E-commerse.csv")
 
-# Create product_count using order_item_id as count of products per product_id per row
-df["product_count"] = 1
+# Mapping to match GeoJSON state names exactly
+state_name_map = {
+    "Andaman and Nicobar Islands": "Andaman & Nicobar Island",
+    "Arunachal Pradesh": "Arunanchal Pradesh",
+    "Chhattisgarh": "Chhattisgarh",
+    "Delhi": "NCT of Delhi",
+    "Jammu and Kashmir": "Jammu & Kashmir",
+    "Orissa": "Odisha",
+    "Pondicherry": "Puducherry",
+    "Uttaranchal": "Uttarakhand"
+}
 
-# Group data for choropleth and bar chart
+# Apply mapping
+df["customer_state"] = df["customer_state"].replace(state_name_map)
+
+# Group data: each row is one product sold (1 unit), so counting rows is correct
 state_grouped = df.groupby("customer_state")["order_item_id"].count().reset_index(name="total_products")
 category_grouped = df.groupby("product_category_name_english")["order_item_id"].count().reset_index(name="total_products")
 
